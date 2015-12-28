@@ -33,9 +33,9 @@ permalink: pretty
 # PAGINATION
 gems: [jekyll-paginate]
 paginate: 10
-paginate_path: "page:num"paginate: 10
+paginate_path: "page:num"
 exclude: ["less","node_modules","Gruntfile.js","package.json","README.md"]
-relative_permalinks: false
+relative_permalinks: true
 
 # http://en.wikipedia.org/wiki/List_of_tz_database_time_zones
 timezone: Asia/Shanghai
