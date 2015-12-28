@@ -1,0 +1,71 @@
+# Site settings
+title: Shjang
+header-img: "img/facebook.jpg"
+# tagline: "繁星點點"  
+description: "緣聚緣散"  
+baseurl: ""
+url: "http://shjang.com" 
+
+# About/contact
+owner: 
+  name: "Shjang"
+  email: sinlncout@gmail.com
+  bio: "明朝即長路 惜取此時心"
+
+# Data
+gavatar: http://7xpcef.com1.z0.glb.clouddn.com/favicon.png
+favicon: img/favicon.png
+
+douban_username: sinlncout
+twitter_username: 
+github_username: niuniulove
+facebook_username: sinlncout
+weibo_username: sinlncout 
+zhihu_username: debuggger
+
+# Build settings  
+# use Github Flavored Markdown !important  
+# document: http://jekyllrb.com/docs/configuration/#kramdown  
+markdown: kramdown
+highlighter: pygments
+permalink: pretty
+# this is my add, for debugging
+# PAGINATION
+gems: [jekyll-paginate]
+paginate: 10
+paginate_path: "page:num"paginate: 10
+exclude: ["less","node_modules","Gruntfile.js","package.json","README.md"]
+relative_permalinks: false
+
+# http://en.wikipedia.org/wiki/List_of_tz_database_time_zones
+timezone: Asia/Shanghai
+
+# Defaults for posts
+defaults:
+  -
+    scope: 
+      path: ""
+      type: "posts"
+    values:
+      layout: "post"
+      author: "Shjang"
+      header-img: "img/facebook.jpg" # We don't want posts without a header image, that whould mean white on white
+
+# Comments 
+comments :
+  provider : duoshuo
+  duoshuo :
+    short_name : shang
+  disqus :
+      short_name : quietlylove
+
+# Analytics and webmaster tools stuff goes here
+google_analytics: 
+google_verify:
+# https://ssl.bing.com/webmaster/configure/verify/ownership Option 2 content= goes here
+bing_verify:
+
+# Links to include in footer navigation
+
+
+
