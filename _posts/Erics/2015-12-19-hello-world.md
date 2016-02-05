@@ -1,10 +1,10 @@
 ---
 layout: post
-title: Hello, World
-date: 2015-12-20
-categories: blog
-tags: [newbies]
-description: My first post by jekyll
+title: Hello, world
+date: 2015-12-19
+categories: [blog]
+tags: [newbies, ]
+description: 2015发生的一些事情，苦乐并行，喜大于忧。
 ---
 
 {{ more }}
@@ -17,14 +17,16 @@ description: My first post by jekyll
 ------
 
 
-
-##按照国际惯例
-{% highlight c linenos %}
-printf("Hello, world. I am a newbies!\n");
-{% endhighlight %}
-
-
-
-
-
-
+## Hello, world
+```c
+	#include <shjang.h> //include shjang's home  
+	#define HAPPY  OK  
+	int main()  
+	{
+		double shjang;  
+		short  August;  
+		time_t time_start = time();
+		printf("Hello, Jekyll and Markdown!\n")
+		return HAPPY;
+	}	
+```

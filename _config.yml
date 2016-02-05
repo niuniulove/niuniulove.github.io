@@ -2,7 +2,7 @@
 title: Shjang
 header-img: "img/facebook.jpg"
 # tagline: "繁星點點"  
-description: "緣聚緣散"  
+description: "有緣"  
 baseurl: ""
 url: "http://shjang.com" 
 
@@ -31,11 +31,11 @@ highlighter: pygments
 permalink: pretty
 # this is my add, for debugging
 # PAGINATION
-gems: [jekyll-paginate]
-paginate: 10
-paginate_path: "page:num"
-exclude: ["less","node_modules","Gruntfile.js","package.json","README.md"]
-relative_permalinks: true
+#gems: [jekyll-paginate]
+#paginate: 10
+#paginate_path: "page:num"
+#exclude: ["less","node_modules","Gruntfile.js","package.json","README.md"]
+#relative_permalinks: true
 
 # http://en.wikipedia.org/wiki/List_of_tz_database_time_zones
 timezone: Asia/Shanghai
@@ -60,10 +60,10 @@ comments :
       short_name : quietlylove
 
 # Analytics and webmaster tools stuff goes here
-google_analytics: 
-google_verify:
+#google_analytics: 
+#google_verify:
 # https://ssl.bing.com/webmaster/configure/verify/ownership Option 2 content= goes here
-bing_verify:
+#bing_verify:
 
 # Links to include in footer navigation
 
