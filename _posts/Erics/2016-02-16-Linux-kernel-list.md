@@ -36,7 +36,7 @@ description: Linux 内核中使用的链表的结构，hash 表的结构，以�
 ```
 struct nf_sockopt_ops
 {
-	**struct list_head list;**
+	struct list_head list;
 
 	int pf;
 
@@ -76,22 +76,24 @@ struct nf_sockopt_ops
 > This list can be used to strung up any data structure you have in mind.
 >
 >* Portable:
->Though I haven't tried in every platform it is safe to assume the list implementation is >very portable. Otherwise it would not have made it into the kernel source tree.
+>Though I haven't tried in every platform it is safe to assume the list implementation is very portable. Otherwise it would not have made it into the kernel source tree.
 >
 >* Easy to Use:
->Since the list is type oblivious same functions are used to initialize, access, and >traverse any list of items strung together using this list implementation.
+>Since the list is type oblivious same functions are used to initialize, access, and traverse any list of items strung together using this list implementation.
 >
 >* Readable:
->The macros and inlined functions of the list implementation makes the resulting code very >elegant and readable.
+>The macros and inlined functions of the list implementation makes the resulting code very elegant and readable.
 >
 >* Saves Time:
 >Stops you from reinventing the wheel. Using the list really saves a lot of debugging time >and repetitively creating lists for every data structure you need to link.
 
 甚至：
+
 >1. List is inside the data item you want to link together.
 >2. You **can put** struct list_head **anywhere** in your structure.
 >3. You **can name** struct list_head **variable anything** you wish.
 >4. You **can have** multiple lists!
+
 
 因此，这样的方式非常灵活。
 
@@ -150,9 +152,10 @@ struct hlist_node {
 
 >由于hlist不是一个完整的循环链表，在list中，表头和结点是同一个数据结构，直接用prev是ok的。在hlist中，表头中没有prev，只有一个first。
 >
->1. 链表head只有一个指向第一个节点的指针，链表节点分别有指向下一个和上一个节点的指针，如此上一个节点便不能和下一个节点使用相同的类型，因为第一个节点的上一个节点是一个struct hlist_head类型而不是hlist_node类型，于是这里巧妙地使用了指向上一个节点的**next指针的地址**作为上一个节点的指针，我们知道在获取上一个节点的时候一般是为了对它进行插入操作，而插入操作只需要操作上一个节点的next指针（hlist_head和hlist_node的指向下个节点的指针类型相同，这样便可以在插入和删除操作对于首节点和普通节点不失通用性了），而不需要操作prev指针，于是这种设计便足够使用了，为上一个节点的next指针赋值时只需要为*(node->pprev)赋值即可
+>1. 链表head只有一个指向第一个节点的指针，链表节点分别有指向下一个和上一个节点的指针，如此上一个节点便不能和下一个节点使用相同的类型，因为第一个节点的上一个节点是一个struct hlist_head类型而不是hlist_node类型，于是这里巧妙地使用了指向上一个节点的**next指针的地址**作为上一个节点的指针，我们知道在获取上一个节点的时候一般是为了对它进行插入操作，而插入操作只需要操作上一个节点的next指针（hlist_head和hlist_node的指向下个节点的指针类型相同，这样便可以在插入和删除操作对于首节点和普通节点不失通用性了），而不需要操作prev指针，于是这种设计便足够使用了，为上一个节点的next指针赋值时只需要为*(node->pprev)赋值即可。
 >
 >2. 还解决了数据结构不一致，hlist_node巧妙的将pprev指向上一个节点的next指针的地址，由于hlist_head和hlist_node指向的下一个节点的指针类型相同，就解决了通用性。
+>
 
 如果到这里你还没看明白是怎么回事，那么给几个比较的代码就能明白了。
 
@@ -169,7 +172,7 @@ static inline void hlist_add_head(struct hlist_node *n, struct hlist_head *h)
 	if (first)
 		first->pprev = &n->next;
 	h->first = n;
-	**n->pprev = &h->first;**
+	n->pprev = &h->first;
 }
 
 
@@ -182,15 +185,15 @@ Void hlist_add_head(struct hlist_node *n ,struct hlist_head *h)
   if (first) 
     first->prev = n;
   h->first = n;
-  **n->prev = NULL;**
+  n->prev = NULL;
 }
 
 
 Part2
 ---------
 //Use Linux kernel's way:
-/\*insert **next** before **n** \*/
-/\* next must be != NULL \*/
+/*insert next before n */
+/* next must be != NULL */
 static inline void hlist_add_before(struct hlist_node *n,
 					struct hlist_node *next)
 {
