@@ -1,6 +1,6 @@
 ---
 layout: post
-title: 然然半周岁
+title: [hj]然然半周岁
 date: 2016-02-24
 categories: [blog]
 tags: [然宝,生日, ]
@@ -55,4 +55,4 @@ description: 我们来支持一下爸爸的博客吧
 慢慢来吧宝贝，愿你健康快乐的成长！
 
 
-by Jie
+*---by Jie*
