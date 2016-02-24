@@ -1,6 +1,6 @@
 ---
 layout: post
-title: 然然半周岁
+title: 然然半周岁@hj
 date: 2016-02-24
 categories: [blog]
 tags: [然宝,生日, ]
