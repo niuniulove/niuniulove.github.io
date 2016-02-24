@@ -1,0 +1,16 @@
+---
+layout: post
+title: Lists of Linux kernel
+date: 2016-02-16
+categories: [blog]
+tags: [Linux kernel,list,hlist, ]
+description: Linux 内核中使用的链表的结构，hash 表的结构，以及相关的操控函数说明
+---
+
+{{ more }}
+
+### 目录
+{:.no_toc}
+* Table of Contents Placeholder
+{:toc}
+----------
