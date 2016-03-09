@@ -8,9 +8,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="description" content="有緣">
 
-    <title>Hello, world - Shjang</title>
+    <title>Lists of Linux kernel - Shjang</title>
 
-    <link rel="canonical" href="http://shjang.com/blog/2015/12/19/hello-world/">
+    <link rel="canonical" href="http://shjang.com/blog/2016/02/16/Linux-kernel-list/">
 
     <!-- Icons -->
 	<!-- <link rel="shortcut icon" href="img/favicon.ico"> -->
@@ -105,12 +105,16 @@
                 <div class="post-heading">
                     <div class="Tags">
                         
-                        <a class="tag" href="/Tags/#newbies" title="newbies">newbies</a>
+                        <a class="tag" href="/Tags/#Linux kernel" title="Linux kernel">Linux kernel</a>
+                        
+                        <a class="tag" href="/Tags/#list" title="list">list</a>
+                        
+                        <a class="tag" href="/Tags/#hlist" title="hlist">hlist</a>
                         
                     </div>
-                    <h1>Hello, world</h1>
+                    <h1>Lists of Linux kernel</h1>
                     
-                    <span class="meta">Posted by Shjang on December 19, 2015</span>
+                    <span class="meta">Posted by Shjang on February 16, 2016</span>
                 </div>
             </div>
         </div>
@@ -125,25 +129,245 @@
 
                 
 <h3 class="no_toc" id="section">目录</h3>
-
 <ul id="markdown-toc">
-  <li><a href="#hello-world" id="markdown-toc-hello-world">Hello, world</a></li>
+  <li><a href="#x00-listhlist" id="markdown-toc-x00-listhlist">0x00 如何使用list（hlist）</a></li>
+  <li><a href="#x01-list" id="markdown-toc-x01-list">0x01 list</a></li>
+  <li><a href="#x02-hlist" id="markdown-toc-x02-hlist">0x02 hlist</a></li>
+  <li><a href="#part1" id="markdown-toc-part1">Part1</a></li>
+  <li><a href="#part2" id="markdown-toc-part2">Part2</a></li>
+  <li><a href="#x02-preserve" id="markdown-toc-x02-preserve">0x02 preserve</a></li>
+  <li><a href="#references" id="markdown-toc-references">References</a></li>
 </ul>
 <hr />
 
-<h2 id="hello-world">Hello, world</h2>
-<p><code>c
-	#include &lt;shjang.h&gt; //include shjang's home  
-	#define HAPPY  OK  
-	int main()  
-	{
-		double shjang;  
-		short  August;  
-		time_t time_start = time();
-		printf("Hello, Jekyll and Markdown!\n")
-		return HAPPY;
-	}	
-</code></p>
+<p>最近想看一下Linux kernel的IP协议栈相关源代码，发现首先得做很多功课，比如数据结构。初步看了下list的实现，的确有很多奇妙的地方。源代码位于<code>include/linux/list.h</code>，新版本内核可能会添加少许函数，基本的函数都是一致的。</p>
+
+<h2 id="x00-listhlist">0x00 如何使用list（hlist）</h2>
+
+<p>平常使用list的时候都是在链表中包含数据，比如</p>
+
+<blockquote>
+  <p>```</p>
+
+  <p>struct test_list {
+	struct test_list *next;
+	int data
+};</p>
+
+  <p>```</p>
+</blockquote>
+
+<p>内核中使用list时，是在数据中包含链表，比如</p>
+
+<p>```
+struct nf_sockopt_ops
+{
+	<strong>struct list_head list;</strong></p>
+
+<pre><code>int pf;
+
+/* Non-inclusive ranges: use 0/0/NULL to never get called. */
+int set_optmin;
+int set_optmax;
+int (*set)(struct sock *sk, int optval, void __user *user, unsigned int len);
+int (*compat_set)(struct sock *sk, int optval,
+		void __user *user, unsigned int len);
+
+int get_optmin;
+int get_optmax;
+int (*get)(struct sock *sk, int optval, void __user *user, int *len);
+int (*compat_get)(struct sock *sk, int optval,
+		void __user *user, int *len);
+
+/* Number of users inside set() or get(). */
+unsigned int use;
+struct task_struct *cleanup_task; };
+
+//definition:
+static LIST_HEAD(nf_sockopts);
+
+//list add
+list_add(&amp;reg-&gt;list, &amp;nf_sockopts);
+</code></pre>
+
+<p>```</p>
+
+<p>有哪些优点呢？</p>
+
+<blockquote>
+  <ul>
+    <li>
+      <p>Type Oblivious:
+This list can be used to strung up any data structure you have in mind.</p>
+    </li>
+    <li>
+      <p>Portable:
+Though I haven’t tried in every platform it is safe to assume the list implementation is &gt;very portable. Otherwise it would not have made it into the kernel source tree.</p>
+    </li>
+    <li>
+      <p>Easy to Use:
+Since the list is type oblivious same functions are used to initialize, access, and &gt;traverse any list of items strung together using this list implementation.</p>
+    </li>
+    <li>
+      <p>Readable:
+The macros and inlined functions of the list implementation makes the resulting code very &gt;elegant and readable.</p>
+    </li>
+    <li>
+      <p>Saves Time:
+Stops you from reinventing the wheel. Using the list really saves a lot of debugging time &gt;and repetitively creating lists for every data structure you need to link.</p>
+    </li>
+  </ul>
+</blockquote>
+
+<p>甚至：
+&gt;1. List is inside the data item you want to link together.
+&gt;2. You <strong>can put</strong> struct list_head <strong>anywhere</strong> in your structure.
+&gt;3. You <strong>can name</strong> struct list_head <strong>variable anything</strong> you wish.
+&gt;4. You <strong>can have</strong> multiple lists!</p>
+
+<p>因此，这样的方式非常灵活。</p>
+
+<h2 id="x01-list">0x01 list</h2>
+
+<p>结构体定义：</p>
+
+<blockquote>
+  <p>```</p>
+
+  <p>struct list_head {
+	struct list_head *next, *prev;
+};</p>
+
+  <p>```</p>
+</blockquote>
+
+<p>这是一个双循环链表，提供初始化、添加、删除、移动、合并等链表的操作，里边的实现应该是比较自然直观的，除了函数末尾有rcu的函数之外，带rcu系列的<strong>应该</strong>是有预存取操作加速的。</p>
+
+<h2 id="x02-hlist">0x02 hlist</h2>
+
+<p>结构体定义：</p>
+
+<blockquote>
+  <p>```</p>
+
+  <p>/*
+* Double linked lists with a single pointer list head.
+* Mostly useful for hash tables where the two pointer list head is
+* too wasteful.
+* You lose the ability to access the tail in O(1).
+*/
+struct hlist_head {
+	struct hlist_node *first;
+};</p>
+
+  <p>struct hlist_node {
+	struct hlist_node *next, **pprev;
+};</p>
+
+  <p>```</p>
+</blockquote>
+
+<p>因为hash表会很大，head部分只有一个指针，节省空间（注解里说的比较明白），还有其他考虑吗？</p>
+
+<p>对于结构体的定义，第一眼的感觉，很多人可能会问，我也不能免俗，为什么不是：</p>
+
+<p>```
+struct hlist_head {
+	struct hlist_node *first;
+};</p>
+
+<p>struct hlist_node {
+	struct hlist_node *next, *prev;
+};
+```</p>
+
+<p>写这篇文章其实主要就是为了消除这个疑惑的。</p>
+
+<blockquote>
+  <p>由于hlist不是一个完整的循环链表，在list中，表头和结点是同一个数据结构，直接用prev是ok的。在hlist中，表头中没有prev，只有一个first。</p>
+
+  <ol>
+    <li>
+      <p>链表head只有一个指向第一个节点的指针，链表节点分别有指向下一个和上一个节点的指针，如此上一个节点便不能和下一个节点使用相同的类型，因为第一个节点的上一个节点是一个struct hlist_head类型而不是hlist_node类型，于是这里巧妙地使用了指向上一个节点的<strong>next指针的地址</strong>作为上一个节点的指针，我们知道在获取上一个节点的时候一般是为了对它进行插入操作，而插入操作只需要操作上一个节点的next指针（hlist_head和hlist_node的指向下个节点的指针类型相同，这样便可以在插入和删除操作对于首节点和普通节点不失通用性了），而不需要操作prev指针，于是这种设计便足够使用了，为上一个节点的next指针赋值时只需要为*(node-&gt;pprev)赋值即可</p>
+    </li>
+    <li>
+      <p>还解决了数据结构不一致，hlist_node巧妙的将pprev指向上一个节点的next指针的地址，由于hlist_head和hlist_node指向的下一个节点的指针类型相同，就解决了通用性。</p>
+    </li>
+  </ol>
+</blockquote>
+
+<p>如果到这里你还没看明白是怎么回事，那么给几个比较的代码就能明白了。</p>
+
+<p>```</p>
+
+<h2 id="part1">Part1</h2>
+
+<p>//Use Linux kernel’s way:
+static inline void hlist_add_head(struct hlist_node *n, struct hlist_head *h)
+{
+	struct hlist_node *first = h-&gt;first;
+	n-&gt;next = first;
+	if (first)
+		first-&gt;pprev = &amp;n-&gt;next;
+	h-&gt;first = n;
+	<strong>n-&gt;pprev = &amp;h-&gt;first;</strong>
+}</p>
+
+<p>//Use your own way:
+Void hlist_add_head(struct hlist_node *n ,struct hlist_head *h) 
+{
+  struct hlist_node *first = h-&gt;first;</p>
+
+<p>n-&gt;next = first;
+  if (first) 
+    first-&gt;prev = n;
+  h-&gt;first = n;
+  <strong>n-&gt;prev = NULL;</strong>
+}</p>
+
+<h2 id="part2">Part2</h2>
+<p>//Use Linux kernel’s way:
+/*insert <strong>next</strong> before <strong>n</strong> */
+/* next must be != NULL */
+static inline void hlist_add_before(struct hlist_node *n,
+					struct hlist_node *next)
+{
+	n-&gt;pprev = next-&gt;pprev;
+	n-&gt;next = next;
+	next-&gt;pprev = &amp;n-&gt;next;
+	*(n-&gt;pprev) = n;
+}</p>
+
+<p>//Use your own way:
+static inline void hlist_add_before(struct hlist_node *n,
+					struct hlist_node *next,
+					struct hlist_head *head) //extra push
+{
+	n-&gt;prev = next-&gt;prev;
+	n-&gt;next = next;
+	next-&gt;prev = n;
+	if(n-&gt;prev){
+		n-&gt;prev-&gt;next = n;
+	}else{
+		Head-&gt;first = n;
+	}
+}</p>
+
+<p>```</p>
+
+<p>看到没有，对于add函数，就要多出一个参数的push还有if-else的判断，远没有内核中实现的那么流畅和简洁！对于插入和删除等操作也是如此，因此，内核中实现的hlist是何等的简洁和高明，在此对写出此代码的人表示最真诚的敬意！</p>
+
+<h2 id="x02-preserve">0x02 preserve</h2>
+
+<h1 id="references">References</h1>
+
+<ol>
+  <li><a href="http://lwn.net/Articles/336255/">Linux kernel design patterns - part 2</a></li>
+  <li><a href="http://lwn.net/Articles/336224/">Linux kernel design patterns - part 1</a></li>
+  <li><a href="http://isis.poly.edu/kulesh/stuff/src/klist/">Linux Kernel Linked List Explained</a></li>
+  <li><a href="http://www.cnblogs.com/wang_yb/archive/2013/04/16/3023892.html">《Linux内核设计与实现》读书笔记（六）- 内核数据结构</a></li>
+</ol>
+
 
 
                 <hr>
@@ -153,10 +377,10 @@
 
                 <ul class="pager">
                     
-                    
-                    <li class="next">
-                        <a href="/blog/2016/02/02/Passed-Year-2015/" data-toggle="tooltip" data-placement="top" title="2015过往">Next Post &rarr;</a>
+                    <li class="previous">
+                        <a href="/blog/2016/02/02/Passed-Year-2015/" data-toggle="tooltip" data-placement="top" title="2015过往">&larr; Previous Post</a>
                     </li>
+                    
                     
                 </ul>
 
@@ -181,7 +405,7 @@
 
                 <!-- 多说评论框 start -->
                 <div class="comment">
-                    <div class="ds-thread" data-thread-key="/blog/2015/12/19/hello-world" data-title="Hello, world" data-url="http://shjang.com/blog/2015/12/19/hello-world/"></div>
+                    <div class="ds-thread" data-thread-key="/blog/2016/02/16/Linux-kernel-list" data-title="Lists of Linux kernel" data-url="http://shjang.com/blog/2016/02/16/Linux-kernel-list/"></div>
                 </div>
                 <!-- 多说评论框 end -->
             </div>

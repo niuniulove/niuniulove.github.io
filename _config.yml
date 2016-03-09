@@ -31,10 +31,10 @@ highlighter: pygments
 permalink: pretty
 # this is my add, for debugging
 # PAGINATION
-#gems: [jekyll-paginate]
-#paginate: 10
-#paginate_path: "page:num"
-#exclude: ["less","node_modules","Gruntfile.js","package.json","README.md"]
+gems: [jekyll-paginate]
+paginate: 10
+paginate_path: "page:num"
+exclude: ["less","node_modules","Gruntfile.js","package.json","README.md"]
 #relative_permalinks: true
 
 # http://en.wikipedia.org/wiki/List_of_tz_database_time_zones

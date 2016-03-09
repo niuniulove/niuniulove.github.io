@@ -1,6 +1,6 @@
 ---
 layout: post
-title: 钢琴 @hj
+title: 钢琴
 date: 2016-03-09
 categories: [blog]
 tags: [音乐,钢琴, ]
