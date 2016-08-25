@@ -39,7 +39,7 @@ description: 今天你满周岁了宝贝。妈妈听着《四季歌》在办公�
 
 宝贝，就到这，送这首歌词给你，粤语的，妈妈以后教你唱。
 
-<img src="http://7xpcef.com1.z0.glb.clouddn.com/1mom.jpg" width=384 height=512 />
+![mom](http://7xpcef.com1.z0.glb.clouddn.com/1mom.jpg)
 
 
 
@@ -67,8 +67,7 @@ description: 今天你满周岁了宝贝。妈妈听着《四季歌》在办公�
 > 何地柛仙把扇摇 留下霜雪知多少
 > 
 > 蚂蚁有洞穴 家有一个门 门外狂风呼呼叫
-> >
-> >
+> 
 
 
 
